@@ -16,8 +16,8 @@ export default function Login() {
     setLoading(true);
 
     const url = isSignup
-      ? "http://127.0.0.1:8000/api/signup/"
-      : "http://127.0.0.1:8000/api/login/";
+      ? "http://13.60.156.111:8000/api/signup/"
+      : "http://13.60.156.111:8000/api/login/";
 
     const body = isSignup ? { username, email, password } : { email, password };
 
