@@ -15,9 +15,13 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
+    //const url = isSignup
+    //  ? "http://13.61.177.195:8000/api/signup/"
+    //  : "http://13.61.177.195:8000/api/login/";
+
     const url = isSignup
-      ? "http://13.61.177.195:8000/api/signup/"
-      : "http://13.61.177.195:8000/api/login/";
+      ? "/api/signup/"
+      : "/api/login/";
 
     const body = isSignup ? { username, email, password } : { email, password };
 
