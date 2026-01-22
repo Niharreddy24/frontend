@@ -7,15 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout frontend code
+      # 1️⃣ Checkout frontend code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Configure AWS credentials
+      # 2️⃣ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -23,7 +23,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Step 3: Deploy via SSM
+      # 3️⃣ Deploy to EC2 via SSM
       - name: Deploy Frontend via AWS SSM
         run: |
           aws ssm send-command \
@@ -36,6 +36,8 @@ jobs:
               "git pull origin main",
               "npm install",
               "npm run build",
-              "pkill -f serve || true",
-              "nohup npx serve -s build -l 3000 &"
+              "sudo rm -rf /var/www/frontend/*",
+              "sudo cp -r build/* /var/www/frontend/",
+              "sudo chown -R www-data:www-data /var/www/frontend",
+              "sudo systemctl reload nginx"
             ]'
