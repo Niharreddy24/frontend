@@ -25,7 +25,7 @@ export default function Login() {
       const { data } = await axios.post(url, body);
 
       if (isSignup) {
-        alert("Signup successful! Please login.");
+        alert("Signup successful! Please login. Modified!");
         setIsSignup(false);
         setUsername("");
         setEmail("");
