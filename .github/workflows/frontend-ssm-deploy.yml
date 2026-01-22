@@ -1,4 +1,4 @@
-name: Deploy Frontend (React + SSM)
+name: Deploy React Frontend
 
 on:
   push:
@@ -11,22 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout frontend code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install & Build frontend
-        run: |
-          cd frontend
-          npm install
-          npm run build
-          cd ..
-          zip -r frontend-build.zip frontend/build
-
+      # Step 2: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -34,12 +23,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Upload build to S3
-        run: |
-          aws s3 cp frontend-build.zip \
-            s3://${{ secrets.FRONTEND_S3_BUCKET }}/frontend-build.zip
-
-      - name: Deploy frontend via SSM
+      # Step 3: Deploy via SSM
+      - name: Deploy Frontend via AWS SSM
         run: |
           aws ssm send-command \
             --region "${{ secrets.AWS_REGION }}" \
@@ -47,15 +32,10 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy React frontend" \
             --parameters commands='[
-              "cd /var/www",
-              "rm -rf frontend",
-              "aws s3 cp s3://${{ secrets.FRONTEND_S3_BUCKET }}/frontend-build.zip .",
-              "unzip frontend-build.zip",
-              "mv frontend/build frontend",
-              "rm frontend-build.zip",
-              "sudo systemctl reload nginx"
-            ]'
-
-              "cd /home/ubuntu/projects/frontend",
-              "rm -rf build"
+              "cd ~/projects/login-signup/frontend",
+              "git pull origin main",
+              "npm install",
+              "npm run build",
+              "pkill -f serve || true",
+              "nohup npx serve -s build -l 3000 &"
             ]'
