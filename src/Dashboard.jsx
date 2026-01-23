@@ -20,7 +20,7 @@ export default function Dashboard() {
   // Fetch profile on load
   useEffect(() => {
     axios
-      .get("http://13.61.177.195:8000/api/profile/", config)
+      .get("/api/profile/", config)
       .then((res) => {
         setProfile(res.data);
         setLoading(false);
@@ -43,7 +43,7 @@ export default function Dashboard() {
 
     try {
       const res = await axios.patch(
-        "http://13.61.177.195:8000/api/profile/update-pic/",
+        "/api/profile/update-pic/",
         formData,
         config
       );
@@ -63,7 +63,7 @@ export default function Dashboard() {
 
     try {
       await axios.post(
-        "http://13.61.177.195:8000/api/change-password/",
+        "/api/change-password/",
         { new_password: newPassword },
         config
       );
@@ -121,7 +121,7 @@ export default function Dashboard() {
             <div className="flex flex-col items-center gap-3">
               {profile.profilePic && (
                 <img
-                  src={`http://13.61.177.195:8000${profile.profilePic}`}
+                  src={`http://13.61.177.195/${profile.profilePic}`}
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover"
                 />
