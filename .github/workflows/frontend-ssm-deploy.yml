@@ -24,30 +24,56 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       # 3️⃣ Deploy to EC2 via SSM
-      - name: Deploy Frontend via AWS SSM
+     - name: Deploy Frontend via AWS SSM (with logs)
+        shell: bash
         run: |
-         COMMAND_ID=$(aws ssm send-command \
-            --region "${{ secrets.AWS_REGION }}" \
-            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
-            --document-name "AWS-RunShellScript" \
-            --comment "Deploy React frontend" \
-            --parameters commands='[ 
-              "cd ~/projects/frontend",
-              "git pull origin main",
-              "npm install",
-              "npm run build",
-              "sudo rm -rf /var/www/frontend/*",
-              "sudo cp -rv build/* /var/www/frontend/",
-              "sudo chown -R www-data:www-data /var/www/frontend",
-              "sudo systemctl reload nginx"
-            ]'\
-            --output text \
-            --query 'Command.CommandId')
+      set -e
+    COMMAND_ID=$(aws ssm send-command \
+      --region "${{ secrets.AWS_REGION }}" \
+      --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+      --document-name "AWS-RunShellScript" \
+      --comment "Deploy React frontend" \
+      --parameters 'commands=[
+        "set -euxo pipefail",
+        "cd ~/projects/frontend",
+        "git rev-parse HEAD",
+        "npm ci || npm install",
+        "npm run build",
+        "sudo rm -rf /var/www/frontend/*",
+        "sudo cp -r build/* /var/www/frontend/",
+        "sudo chown -R www-data:www-data /var/www/frontend",
+        "ls -lah /var/www/frontend | head -n 50",
+        "sudo nginx -t",
+        "sudo systemctl reload nginx"
+      ]' \
+      --query "Command.CommandId" \
+      --output text)
 
-            
-            - name: Show logs
-            run: |
-            aws ssm get-command-invocation \
-            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
-            --query 'StandardOutputContent' \
-            --output text
+    echo "SSM Command ID: $COMMAND_ID"
+
+    # wait until command finishes then print logs
+    STATUS="Pending"
+    while [[ "$STATUS" == "Pending" || "$STATUS" == "InProgress" || "$STATUS" == "Delayed" ]]; do
+      sleep 3
+      STATUS=$(aws ssm get-command-invocation \
+        --region "${{ secrets.AWS_REGION }}" \
+        --command-id "$COMMAND_ID" \
+        --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+        --query "Status" --output text)
+      echo "SSM Status: $STATUS"
+    done
+
+    aws ssm get-command-invocation \
+      --region "${{ secrets.AWS_REGION }}" \
+      --command-id "$COMMAND_ID" \
+      --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+      --query "StandardOutputContent" --output text || true
+
+    aws ssm get-command-invocation \
+      --region "${{ secrets.AWS_REGION }}" \
+      --command-id "$COMMAND_ID" \
+      --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+      --query "StandardErrorContent" --output text || true
+
+    # fail pipeline if not success
+    [[ "$STATUS" == "Success" ]]
