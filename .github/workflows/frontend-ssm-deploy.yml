@@ -32,12 +32,19 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy React frontend" \
             --parameters commands='[
+              "echo \" Deployment started\",
               "cd ~/projects/frontend",
+              "echo \" entered projects frontend folder\",
               "git pull origin main",
+              "echo \" git hub pull sucessfull\",
               "npm install",
+              "echo \" npm install sucessfull\",
               "npm run build",
+              "echo \" npm build sucessfull\",
               "sudo rm -rf /var/www/frontend/*",
+              "echo \" remove files sucessfull\",
               "sudo cp -rv build/* /var/www/frontend/",
+              "echo \" copy files sucessfull\",
               "sudo chown -R www-data:www-data /var/www/frontend",
               "sudo systemctl reload nginx"
             ]'
