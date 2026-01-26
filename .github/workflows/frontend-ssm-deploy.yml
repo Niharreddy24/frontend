@@ -31,7 +31,8 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy React frontend" \
-            --parameters commands='[
+            --parameters commands='[ 
+            "#!/bin/bash",
               "cd ~/projects/frontend",
               "git pull origin main",
               "npm install",
