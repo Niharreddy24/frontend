@@ -40,8 +40,8 @@ jobs:
               "sudo cp -rv build/* /var/www/frontend/",
               "sudo chown -R www-data:www-data /var/www/frontend",
               "sudo systemctl reload nginx"
-            ]'
-            --query "Command.CommandId" 
+            ]' \
+            --query "Command.CommandId" \ 
             --output text)
 
             echo "SSM Command ID: $COMMAND_ID"
