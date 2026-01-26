@@ -46,7 +46,7 @@ jobs:
             --query 'Command.CommandId')
 
             
-            -name: Show logs
+            - name: Show logs
             run: |
             aws ssm get-command-invocation \
             --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
