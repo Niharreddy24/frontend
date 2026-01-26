@@ -26,7 +26,7 @@ jobs:
       # 3️⃣ Deploy to EC2 via SSM
       - name: Deploy Frontend via AWS SSM
         run: |
-          aws ssm send-command \
+         COMMAND_ID=$(aws ssm send-command \
             --region "${{ secrets.AWS_REGION }}" \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
@@ -41,4 +41,16 @@ jobs:
               "sudo cp -rv ~/projects/frontend/build/ /var/www/frontend/",
               "sudo chown -R www-data:www-data /var/www/frontend",
               "sudo systemctl reload nginx"
-            ]'
+            ]'\
+            --output text \
+            --query 'Command.CommandId')
+
+            echo "command_id=$COMMAND_ID" >> $GITHUB_OUPUT
+
+            -name: Show logs
+            run: |
+            aws ssm get-command-invocation \
+            --command-id "${{ steps.deploy.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --query 'StandardOutputContent' \
+            --output text
