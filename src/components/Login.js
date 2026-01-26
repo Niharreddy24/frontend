@@ -75,7 +75,7 @@ export default function Login() {
         className="bg-white p-10 rounded-2xl shadow-2xl w-96 flex flex-col gap-6"
       >
         <h2 className="text-3xl font-bold text-gray-800 text-center">
-          {isSignup ? "Sign Up" : "Login modified again"}
+          {isSignup ? "Sign Up" : "Login modified "}
         </h2>
 
         {isSignup && (
