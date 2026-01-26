@@ -32,10 +32,8 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy React frontend" \
             --parameters commands='[
-              "cd /home/ssm-user/projects/frontend",
-              "echo \" git pull before \"" \
-              "git pull origin main", \
-              "echo \" git pull after\"" \
+              "cd /home/ssm-user/projects/frontend", 
+              "git pull origin main", 
               "npm install",
               "npm run build",
               "sudo rm -rf /var/www/frontend/*",
