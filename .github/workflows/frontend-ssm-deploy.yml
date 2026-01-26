@@ -33,9 +33,9 @@ jobs:
             --comment "Deploy React frontend" \
             --parameters commands='[
               "cd /home/ssm-user/projects/frontend",
-              "echo \" git pull before \" \
-              "git pull origin main",
-              "echo \" git pull after\" \
+              "echo \" git pull before \"" \
+              "git pull origin main", \
+              "echo \" git pull after\"" \
               "npm install",
               "npm run build",
               "sudo rm -rf /var/www/frontend/*",
