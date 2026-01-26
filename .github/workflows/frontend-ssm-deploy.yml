@@ -33,6 +33,7 @@ jobs:
             --comment "Deploy React frontend" \
             --parameters commands='[
               "cd /home/ssm-user/projects/frontend", 
+              "git fetch origin",
               "git pull origin main", 
               "npm install",
               "npm run build",
