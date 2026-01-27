@@ -14,6 +14,14 @@ jobs:
       # 1️⃣ Checkout frontend code
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Debug
+        run: |
+          echo "PWD: $(pwd)"
+          echo "Files:"
+          ls-la
+          echo ""
+          echo "Git Status"
+          git status || echo "Not a git repository"
 
       # 2️⃣ Configure AWS credentials
       - name: Configure AWS credentials
