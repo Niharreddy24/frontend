@@ -33,6 +33,7 @@ jobs:
             --comment "Deploy React frontend" \
             --parameters commands='[
               "cd /home/ssm-user/projects/frontend", 
+              "export GIT_TRACE=1 GIT_TRACE_PERFORMANCE=1 GIT_TRACE_SETUP=1 GIT_TRACE_PACK_ACCESS=1 GIT_CURL_VERBOSE=1 GIT_SSH_COMMAND=\"ssh -vvv\"",
               "git fetch origin",
               "git pull origin main", 
               "npm install",
