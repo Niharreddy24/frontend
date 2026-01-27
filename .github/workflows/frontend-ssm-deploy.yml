@@ -18,7 +18,7 @@ jobs:
         run: |
           echo "PWD: $(pwd)"
           echo "Files:"
-          ls-la
+          ls-l
           echo ""
           echo "Git Status"
           git status || echo "Not a git repository"
